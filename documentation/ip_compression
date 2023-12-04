@@ -1,0 +1,5 @@
+[0, 100, 200, 300]
+
+lower, higher, middle
+
+integrate(top-middle) = 13358.281744150338 (N*mm)
