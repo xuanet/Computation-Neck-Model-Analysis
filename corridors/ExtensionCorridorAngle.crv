@@ -1,0 +1,21 @@
+Curveplot
+LS-DYNA keyword deck by LS-Prepost
+Abcissa
+Ordinate
+Define Curve
+Curve 1 #pts=5
+* Minval=   0.000000e+000 at time=        0.000000
+* Maxval=   4.414500e-001 at time=       79.000000
+80,-120
+80,-20
+140,-20
+140,-120
+80,-120
+endcurve
+Curve 2 #pts=2
+* Minval=   0.000000e+000 at time=        0.000000
+* Maxval=   4.414500e-001 at time=       79.000000
+150,0
+250,0
+endcurve
+

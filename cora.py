@@ -19,6 +19,7 @@ def ncc(data0, data1):
     ----------
     data0, data1 :  numpy arrays of same size
     """
+    print(data0.size)
     return (1.0/(data0.size-1)) * np.sum(norm_data(data0)*norm_data(data1))
 
 def grabdata(crv_file): #when calling files, make sure to specify r'filepath'
@@ -36,8 +37,8 @@ def grabdata(crv_file): #when calling files, make sure to specify r'filepath'
     return x,y
 
 
-[x, y] = grabdata("TensionCorridorFS2023.crv")
-[a, b] = grabdata("ForceDisplacement (1).crv")
+[x, y] = grabdata("corridors/TensionCorridorFS2023.crv")
+[a, b] = grabdata("6.5/6.5 Curves and Images/Tension.crv")
 
 toe = int(len(a)/10)
 
@@ -75,3 +76,6 @@ plt.show()
 NCC = ncc(middleCorridor, b)
 
 print("ncc: ", NCC)
+
+print(len(middleCorridor))
+print(len(b))

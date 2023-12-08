@@ -127,7 +127,7 @@ def areaBetweenCurves(top, middle, step):
 if __name__ == "__main__":
     pass
 
-[x, y] = grabdata("corridors/TensionCorridorFS2023.crv")
+[x, y] = grabdata("6.5/6.5 Curves and Images/HeadAngleFlexion.crv")
 [a, b] = grabdata("6.5/6.5 Curves and Images/Tension.crv")
 
 
@@ -178,6 +178,7 @@ for i in range(len(ip)-1):
     # deltaX = x[i][middleIndex]-x[i][0]
     # print("slope i: ", deltaY/deltaX)
     plt.plot(x[i], y[i], label = bounds[i%3])
+    print(min(y[i]))
 
 for i in range(len(a)):
     if a[i]*lowerSlope <= b[i] <= a[i]*higherSlope:
@@ -200,6 +201,9 @@ plt.title("Tension Corridor")
 plt.xlabel("Displacement (mm)")
 plt.ylabel("Load (N)")
 plt.show()
+
+
+
 
 
 
