@@ -54,7 +54,7 @@ class NCC():
     def runTest(self, pruneFraction, testType, title=None):
         # x and y are experimental data
         if testType == "headlag":
-            [x, y] = self.createArrayFromCRVSimple(self.exp)
+            [x, y] = self.createArrayFromCRVSimple(self.corridor)
             x = self.pruneData(x, pruneFraction)
             y = self.pruneData(y, pruneFraction)
         else:
@@ -476,7 +476,7 @@ class NCC():
             y3 = splev(x2, spl2)
 
 
-            [ex,ey] = self.createArrayFromCRVSimple(self.exp)
+            [ex,ey] = self.createArrayFromCRV(self.exp)
             maxPointX = max(ex)
             maxPointY = max(ey)
 
@@ -526,19 +526,24 @@ class NCC():
             
         if testType == "rvel":
 
+            [x, y] = self.createArrayFromCRVComma(self.corridor)
+
             # [x,y] = self.createArrayFromCRVComma(self.corridor)
             maxPointX = max(x)
             maxPointY = max(y)
 
-            maxIndex = list(y).index(maxPointY)
+            maxIndex = list(x).index(maxPointX)
 
-            print(maxPointY)
+            # print(maxPointY)
 
 
             spl = splrep(x[:maxIndex+1],y[:maxIndex+1])
 
-            decreasingX = x[maxIndex:]
-            decreasingY = y[maxIndex:]
+            # print(x[:100])
+            # print(x[100:])
+
+            decreasingX = x[maxIndex+1:]
+            decreasingY = y[maxIndex+1:]
 
             spl2 = splrep(decreasingX[::-1], decreasingY[::-1])
     
@@ -579,8 +584,8 @@ class NCC():
             plt.plot(x2, y3, label = 'lower corridor')
             # plt.plot(ex2, ey2, label = 'experiment')
             # plt.plot(dspan, hc, label = 'higher corridor')
-            plt.plot(inPointsX, inPointsY, label = 'inside points')
-            plt.plot(outPointsX, outPointsY, label = 'outside points', linestyle='dotted')
+            plt.scatter(inPointsX, inPointsY, label = 'inside points', color='black', marker='.', s=10)
+            plt.scatter(outPointsX, outPointsY, label = 'outside points', color='red', marker='.', s=10)
 
             plt.legend()
             plt.title(title)

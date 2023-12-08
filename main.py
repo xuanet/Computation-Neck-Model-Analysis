@@ -17,8 +17,7 @@ fileNameNBDLx = "6.5/6.5 Curves and Images/NBDLHeadxCoord.crv"
 
 fileNameNBDLz = "6.5/6.5 Curves and Images/NBDLHeadzCoord.crv"
 
-# This is the wrong EXPERIMENT file
-fileNameNBDLHeadLag = "corridors/HeadLag+Corr.csv"
+fileNameNBDLHeadLag = "6.5/6.5 Curves and Images/NBDLHeadLag.crv"
 fileNameNBDLHeadLagCorridor = "corridors/HeadLag+Corr.csv"
 
 fileNameCHOPEAMx = "6.5/6.5 Curves and Images/CHOP_EAMX_model.crv"
@@ -33,14 +32,11 @@ fileNameCHOPNASxCorridor = "corridors/CHOP_NASX.crv"
 fileNameCHOPNASz = "6.5/6.5 Curves and Images/CHOP_NASZ_model.crv"
 fileNameCHOPNASzCorridor = "corridors/CHOP_NASZ.crv"
 
-# Do not run rotation velocity
-
-# # This is the wrong CORRIDOR file
-# fileNameRV = "6.5/6.5 Curves and Images/CHOP_ROTVELY_model.crv"
-# fileNameRVCorridor = "corridors/CHOP_NASZ.crv"
+fileNameRV = "6.5/6.5 Curves and Images/CHOP_ROTVELY_model.crv"
+fileNameRVCorridor = "corridors/CHOP_HeadY.crv"
 
 
-
+# Running tests, comment in/out at will
 
 print("\nNOW RUNNING TENSION TEST")
 tensionTest = NCC(29.8, 98.5, 167.1, fileNameTension)
@@ -94,8 +90,8 @@ print("\nNOW RUNNING CHOP NASZ TEST")
 CHOPNASzTest = NCC(0, 0, 0, fileNameCHOPNASz, corridor=fileNameCHOPNASzCorridor)
 CHOPNASzTest.runTest(0, "eam", title="NASZ Test")
 
-# Do not run rotation velocity
-# NBDLHeadLagTest = NCC(0, 0, 0, fileNameRV, corridor = fileNameRVCorridor)
-# NBDLHeadLagTest.runTest(0, "rvel", title="Head Angular Velocity Test")
+print("\nNOW RUNNING ANGULAR VELOCITY TEST")
+NBDLRVTest = NCC(0, 0, 0, fileNameRV, corridor = fileNameRVCorridor)
+NBDLRVTest.runTest(0, "rvel", title="Head Angular Velocity Test")
 
 print("\nALL TESTS COMPLETED")

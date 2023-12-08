@@ -7,7 +7,7 @@ def grabdata(crv_file): #when calling files, make sure to specify r'filepath'
         ptsline = header[5]
         pts = int(ptsline.split('=')[1])
         data_lines = list(fid1)
-        data_lines.remove('endcurve\n')
+        # data_lines.remove('endcurve')
 
     out = [tuple(map(float, line.split())) for line in data_lines]
     out = np.array(out, dtype='float')
@@ -15,25 +15,8 @@ def grabdata(crv_file): #when calling files, make sure to specify r'filepath'
     y = out[:,1]
     return x,y
 
-def getRoundedThreshold(a, MinClip):
-    return round(float(a) / MinClip) * MinClip
-
-def roundArray(array, MinClip):
-    newArray = [0]*len(array)
-    for i in range(len(array)):
-        newArray[i] = getRoundedThreshold(array[i], MinClip)
-
-    return newArray
 
 
-if __name__ == "__main__":
-    pass
-
-corridorType = "tension"
-ip = []
-xaxis = ""
-yaxis = ""
-title = ""
 
 # def grabdata(crv_file): #when calling files, make sure to specify r'filepath'
 #     fid1 = open(crv_file, 'r')
@@ -49,7 +32,7 @@ title = ""
 #     y = out[:,1]
 #     return x,y
 
-[x, y] = grabdata("6.5/6.5 Curves and Images/CHOP_ROTVELY_model.crv")
+[x, y] = grabdata("corridors/NBDLDispCorridor.crv")
 # [ex, ey] = grabdata("corridors/NBDLHeadLagCorridor.crv")
 
 plt.plot(x, y)
