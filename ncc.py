@@ -275,7 +275,7 @@ class NCC():
             plt.legend()
             plt.title("Flexion Test")
             plt.xlabel("Moment (Nm)")
-            plt.ylabel("Angle (Rad)")
+            plt.ylabel("Angle (degrees))")
             plt.show()
 
             return
@@ -395,7 +395,7 @@ class NCC():
             plt.legend()
             plt.title("Extension Test")
             plt.xlabel("Moment (Nm)")
-            plt.ylabel("Angle (Rad)")
+            plt.ylabel("Angle (degrees)")
             plt.show()
 
             return  
