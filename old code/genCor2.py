@@ -32,7 +32,8 @@ def grabdata(crv_file): #when calling files, make sure to specify r'filepath'
 #     y = out[:,1]
 #     return x,y
 
-[x, y] = grabdata("corridors/NBDLDispCorridor.crv")
+[x, y] = grabdata("Hybrid III/NBDLHeadLag.crv")
+[a, b] = grabdata
 # [ex, ey] = grabdata("corridors/NBDLHeadLagCorridor.crv")
 
 plt.plot(x, y)

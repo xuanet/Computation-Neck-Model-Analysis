@@ -1,38 +1,38 @@
 from ncc import NCC
 from box import Box
 
-fileNameTension = "6.5/6.5 Curves and Images/Tension.crv"
+fileNameTension = "3.4/Tension.crv"
 
-fileNameCompression = "6.5/6.5 Curves and Images/Compression.crv"
+fileNameCompression = "3.4/Compression.crv"
 
-fileNameFlexion = "6.5/6.5 Curves and Images/MomentAngleFlexion.crv"
+# fileNameFlexion = "3.4.6/MomentAngleFlexion.crv"
 
-fileNameExtension = "6.5/6.5 Curves and Images/MomentAngleExtension.crv"
+# fileNameExtension = "3.4.6/MomentAngleExtension.crv"
 
-fileNameFlexionAngle = "6.5/6.5 Curves and Images/HeadAngleFlexion.crv"
+fileNameExtensionAngle = "3.4/HeadAngleExtension.crv"
 
-fileNameExtensionAngle = "6.5/6.5 Curves and Images/HeadAngleExtension.crv"
+fileNameNBDLx = "3.4/NBDLHeadxCoord.crv"
+fileNameNBDLz = "3.4/NBDLHeadzCoord.crv"
 
-fileNameNBDLx = "6.5/6.5 Curves and Images/NBDLHeadxCoord.crv"
+fileNameX = "3.4/NBDLHeadxCoord.crv"
+fileNameZ = "3.4/NBDLHeadzCoord.crv"
 
-fileNameNBDLz = "6.5/6.5 Curves and Images/NBDLHeadzCoord.crv"
+# fileNameNBDLHeadLag = "3.4/NBDLHeadLag.crv"
+# fileNameNBDLHeadLagCorridor = "corridors/HeadLag+Corr.csv"
 
-fileNameNBDLHeadLag = "6.5/6.5 Curves and Images/NBDLHeadLag.crv"
-fileNameNBDLHeadLagCorridor = "corridors/HeadLag+Corr.csv"
-
-fileNameCHOPEAMx = "6.5/6.5 Curves and Images/CHOP_EAMX_model.crv"
+fileNameCHOPEAMx = "3.4/CHOP_EAMX_model.crv"
 fileNameCHOPEAMxCorridor = "corridors/CHOP_EAMX.crv"
 
-fileNameCHOPEAMz = "6.5/6.5 Curves and Images/CHOP_EAMZ_model.crv"
+fileNameCHOPEAMz = "3.4/CHOP_EAMZ_model.crv"
 fileNameCHOPEAMzCorridor = "corridors/CHOP_EAMZ.crv"
 
-fileNameCHOPNASx = "6.5/6.5 Curves and Images/CHOP_NASX_model.crv"
+fileNameCHOPNASx = "3.4/CHOP_NASX_model.crv"
 fileNameCHOPNASxCorridor = "corridors/CHOP_NASX.crv"
 
-fileNameCHOPNASz = "6.5/6.5 Curves and Images/CHOP_NASZ_model.crv"
+fileNameCHOPNASz = "3.4/CHOP_NASZ_model.crv"
 fileNameCHOPNASzCorridor = "corridors/CHOP_NASZ.crv"
 
-fileNameRV = "6.5/6.5 Curves and Images/CHOP_ROTVELY_model.crv"
+fileNameRV = "3.4/CHOP_ROTVELY_model.crv"
 fileNameRVCorridor = "corridors/CHOP_HeadY.crv"
 
 
@@ -40,23 +40,19 @@ fileNameRVCorridor = "corridors/CHOP_HeadY.crv"
 
 print("\nNOW RUNNING TENSION TEST")
 tensionTest = NCC(29.8, 98.5, 167.1, fileNameTension)
-tensionTest.runTest(0.2, "tension")
+tensionTest.runTest(0.1, "tension")
 
 print("\nNOW RUNNING COMPRESSION TEST")
 compressionTest = NCC(0, 116.4, 235, fileNameCompression)
-compressionTest.runTest(0.2, "compression")
+compressionTest.runTest(0.1, "compression")
 
-print("\nNOW RUNNING FLEXION (MOMENT VS ANGLE) TEST")
-flexionTest = NCC(0, 0, 0, fileNameFlexion)
-flexionTest.runTest(0.2, "flexion")
+# print("\nNOW RUNNING FLEXION (MOMENT VS ANGLE) TEST")
+# flexionTest = NCC(0, 0, 0, fileNameFlexion)
+# flexionTest.runTest(0.1, "flexion")
 
-print("\nNOW RUNNING EXTENSION (MOMENT VS ANGLE) TEST")
-extensionTest = NCC(0, 0, 0, fileNameExtension)
-extensionTest.runTest(0.2, "extension")
-
-print("\nNOW RUNNING FLEXION (TIME VS ANGLE) TEST")
-flexionAngleTest = Box([82.75, 85], [98.25, 105], fileNameFlexionAngle, type="max")
-flexionAngleTest.runTest("Flexion Angle Test", "Time (ms)", "Angle (degrees)")
+# print("\nNOW RUNNING EXTENSION (MOMENT VS ANGLE) TEST")
+# extensionTest = NCC(0, 0, 0, fileNameExtension)
+# extensionTest.runTest(0.1, "extension")
 
 print("\nNOW RUNNING EXTENSION (TIME VS ANGLE) TEST")
 extensionAngleTest = Box([80, -120], [140, -20], fileNameExtensionAngle, type="min")
@@ -70,9 +66,13 @@ print("\nNOW RUNNING NBDL Z TEST")
 NBDLzTest = Box([100, 0], [180, 60], fileNameNBDLz, type="min")
 NBDLzTest.runTest("NBDLz Test", "Time (ms)", "Angle (degrees)")
 
-print("\nNOW RUNNING HEAD LAG TEST")
-NBDLHeadLagTest = NCC(0, 0, 0, fileNameNBDLHeadLag, corridor = fileNameNBDLHeadLagCorridor)
-NBDLHeadLagTest.runTest(0, "headlag", title="Head Lag Test")
+print("\nNOW RUNNING NBDL TEST")
+NBDLTest = NCC(0, 0, 0, fileNameX, exp2=fileNameZ)
+NBDLTest.runTest(0, "nbdl", title="NBDL Z vs X")
+
+# print("\nNOW RUNNING HEAD LAG TEST")
+# NBDLHeadLagTest = NCC(0, 0, 0, fileNameNBDLHeadLag, corridor = fileNameNBDLHeadLagCorridor)
+# NBDLHeadLagTest.runTest(0, "headlag", title="Head Lag Test")
 
 print("\nNOW RUNNING CHOP EAM X TEST")
 CHOPEAMxTest = NCC(0, 0, 0, fileNameCHOPEAMx, corridor=fileNameCHOPEAMxCorridor)
@@ -94,4 +94,9 @@ print("\nNOW RUNNING ANGULAR VELOCITY TEST")
 NBDLRVTest = NCC(0, 0, 0, fileNameRV, corridor = fileNameRVCorridor)
 NBDLRVTest.runTest(0, "rvel", title="Head Angular Velocity Test")
 
+
 print("\nALL TESTS COMPLETED")
+
+# print("\nNOW RUNNING FLEXION (TIME VS ANGLE) TEST")
+# flexionAngleTest = Box([82.75, 85], [98.25, 105], fileNameFlexionAngle, type="max")
+# flexionAngleTest.runTest("Flexion Angle Test", "Time (ms)", "Angle (degrees)")

@@ -3,11 +3,12 @@ from scipy.interpolate import splev, splrep
 import matplotlib.pyplot as plt
 
 class NCC():
-    def __init__(self, lower, middle, upper, exp, corridor=None):
+    def __init__(self, lower, middle, upper, exp, exp2=None, corridor=None):
         self.lowerSlope = lower
         self.middleSlope = middle
         self.higherSlope = upper
         self.exp = exp
+        self.exp2 = exp2 if exp2 is not None else 0
         self.corridor = corridor if corridor is not None else 0
 
     def createArrayFromCRVSimple(self, crv_file): #when calling files, make sure to specify r'filepath'
@@ -25,7 +26,8 @@ class NCC():
             ptsline = header[5]
             pts = int(ptsline.split('=')[1])
             data_lines = list(fid1)
-            data_lines.remove('endcurve\n')
+            if 'endcurve\n' in data_lines:
+                data_lines.remove('endcurve\n')
 
         out = [tuple(map(float, line.split())) for line in data_lines]
         out = np.array(out, dtype='float')
@@ -57,7 +59,7 @@ class NCC():
             [x, y] = self.createArrayFromCRVSimple(self.corridor)
             x = self.pruneData(x, pruneFraction)
             y = self.pruneData(y, pruneFraction)
-        else:
+        elif testType != "eam":
             [x, y] = self.createArrayFromCRV(self.exp)
             x = self.pruneData(x, pruneFraction)
             y = self.pruneData(y, pruneFraction)
@@ -100,8 +102,12 @@ class NCC():
             print("# points outside: ", outPoints)
             print("fraction points inside: ", inPoints/len(x))
             
-            middle = mc[:len(inPointsY)]
-            NCC = self.ncc(middle, inPointsY)
+            # middle = mc[:len(inPointsY)]
+            minIndex = min(len(mc), len(y))
+            a = y[:minIndex]
+            b = mc[:minIndex]
+            
+            NCC = self.ncc(a, b)
             print("ncc: ", NCC)
 
             plt.plot(dspan, lc, label = 'lower corridor')
@@ -151,15 +157,18 @@ class NCC():
             print("# points outside: ", outPoints)
             print("fraction points inside: ", inPoints/len(x))
             
-            middle = mc[:len(inPointsY)]
-            NCC = self.ncc(middle, inPointsY)
+            minIndex = min(len(mc), len(y))
+            a = y[:minIndex]
+            b = mc[:minIndex]
+            
+            NCC = self.ncc(a, b)
             print("ncc: ", NCC)
 
             plt.plot(dspan, lc, label = 'lower corridor')
             plt.plot(mdspan, mc, label = 'middle corridor')
             plt.plot(dspan, hc, label = 'higher corridor')
             plt.plot(inPointsX, inPointsY, label = 'inside points')
-            plt.plot(outPointsX, outPointsY, label = 'outside points', linestyle='dotted')
+            # plt.plot(outPointsX, outPointsY, label = 'outside points', linestyle='dotted')
 
             plt.legend()
             plt.title("Compression Test")
@@ -175,6 +184,13 @@ class NCC():
 
             tempx = [rad*57.3 for rad in x]
             tempy = [nmm/1000 for nmm in y]
+
+            tempx = list(tempx)
+            tempy = list(tempy)
+
+            maxIndex = tempx.index(max(tempx))
+            tempx = tempx[:maxIndex]
+            tempy = tempy[:maxIndex]
 
             x = tempx
             y = tempy
@@ -261,8 +277,12 @@ class NCC():
             print("# points inside: ", inPoints)
             print("# points outside: ", outPoints)
             print("fraction points inside: ", inPoints/len(x))
-            m = middle[:len(inPointsY)]
-            NCC = self.ncc(m, inPointsY)
+
+            minIndex = min(len(middle), len(y))
+            a = y[:minIndex]
+            b = middle[:minIndex]
+            
+            NCC = self.ncc(a, b)
             print("ncc: ", NCC)
 
             plt.plot(d, lowM, label = 'lower corridor')
@@ -287,6 +307,13 @@ class NCC():
 
             tempx = [rad*57.3 for rad in x]
             tempy = [nmm/1000 for nmm in y]
+
+            tempx = list(tempx)
+            tempy = list(tempy)
+
+            maxIndex = tempx.index(min(tempx))
+            tempx = tempx[:maxIndex]
+            tempy = tempy[:maxIndex]
 
             x = tempx
             y = tempy
@@ -382,8 +409,11 @@ class NCC():
             print("# points outside: ", outPoints)
             print("fraction points inside: ", inPoints/len(x))
 
-            m = middle[:len(inPointsY)]
-            NCC = self.ncc(m, inPointsY)
+            minIndex = min(len(middle), len(y))
+            a = y[:minIndex]
+            b = middle[:minIndex]
+            
+            NCC = self.ncc(a, b)
             print("ncc: ", NCC)
 
             plt.plot(d, lowM, label = 'lower corridor')
@@ -419,9 +449,9 @@ class NCC():
 
             [ex,ey] = self.createArrayFromCRV(self.exp)
             maxPointX = max(ex)
-            spl = splrep(ex,ey)
+            spl = np.polyfit(ex,ey, 10)
             ex2 = np.arange(0, maxPointX, 1)
-            ey2 = splev(ex2, spl)
+            ey2 = np.polyval(spl, ex2)
 
             # inPointsX = []
             # inPointsY = []
@@ -441,17 +471,27 @@ class NCC():
             print("# points inside: ", inPoints)
             print("# points outside: ", outPoints)
             print("fraction points inside: ", inPoints/len(ey2))
-            m = y3[:len(inPointsY)]
-            NCC = self.ncc(m, inPointsY)
+            # making middle corridor
+
+            middle = []
+
+            for i in range(len(x2)):
+                middle.append((y2[i]+y3[i])/2)
+
+            minIndex = min(len(middle), len(ey2))
+            a = ey2[:minIndex]
+            b = middle[:minIndex]
+            
+            NCC = self.ncc(a, b)
             print("ncc: ", NCC)
 
             plt.plot(x2, y2, label = 'higher corridor')
+            plt.plot(x2, middle, label='middle corridor')
             plt.plot(x2, y3, label = 'lower corridor')
             # plt.plot(ex2, ey2, label = 'experiment')
             # plt.plot(dspan, hc, label = 'higher corridor')
-            plt.plot(inPointsX, inPointsY, label = 'inside points')
-            plt.plot(outPointsX, outPointsY, label = 'outside points', linestyle='dotted')
-
+            plt.scatter(inPointsX, inPointsY, label = 'inside points', color='black', marker='.', s=10)
+            plt.scatter(outPointsX, outPointsY, label = 'outside points', color='red', marker='.', s=10)
             plt.legend()
             plt.title(title)
             plt.xlabel("Time (ms)")
@@ -481,18 +521,22 @@ class NCC():
             maxPointY = max(ey)
 
             maxPointIndex = list(ey).index(maxPointY)
-            ex = ex[:maxPointIndex+1]
-            ey = ey[:maxPointIndex+1]
-            spl = splrep(ex,ey)
+            ex = ex[:maxPointIndex]
+            ey = ey[:maxPointIndex]
+            spl = np.polyfit(ex,ey, 10)
             ex2 = np.arange(0, maxPointX, 1)
-            ey2 = splev(ex2, spl)
+            ey2 = np.polyval(spl, ex2)
 
             # inPointsX = []
             # inPointsY = []
             # outPointsX = []
             # outPointsY = []
+
+            # print(len(y2))
+            # print(len(ey2))
+            # print(len(y3))
  
-            for i in range(len(ey2)):
+            for i in range(min(len(ex2), len(y2))):
                 if y2[i] <= ey2[i] <= y3[i]:
                     inPoints += 1
                     inPointsX.append(ex2[i])
@@ -505,16 +549,29 @@ class NCC():
             print("# points inside: ", inPoints)
             print("# points outside: ", outPoints)
             print("fraction points inside: ", inPoints/len(ey2))
-            m = y3[:len(inPointsY)]
-            NCC = self.ncc(m, inPointsY)
+
+            # making middle corridor
+
+            middle = []
+
+            for i in range(len(x2)):
+                middle.append((y2[i]+y3[i])/2)
+
+            minIndex = min(len(middle), len(ey2))
+            a = ey2[:minIndex]
+            b = middle[:minIndex]
+            
+            NCC = self.ncc(a, b)
             print("ncc: ", NCC)
 
+
             plt.plot(x2, y2, label = 'lower corridor')
+            plt.plot(x2, middle, label='middle corridor')
             plt.plot(x2, y3, label = 'higher corridor')
             # plt.plot(ex2, ey2, label = 'experiment')
             # plt.plot(dspan, hc, label = 'higher corridor')
-            plt.plot(inPointsX, inPointsY, label = 'inside points')
-            plt.plot(outPointsX, outPointsY, label = 'outside points', linestyle='dotted')
+            plt.scatter(inPointsX, inPointsY, label = 'inside points', color='black', marker='.', s=10)
+            plt.scatter(outPointsX, outPointsY, label = 'outside points', color='red', marker='.', s=10)
 
             plt.legend()
             plt.title(title)
@@ -523,6 +580,118 @@ class NCC():
             plt.show()
 
             return
+        
+        if testType == "nbdl":
+            [x, z] = self.createArrayFromCRV("corridors/NBDLDispCorridor.crv")
+
+            [t, ex] = self.createArrayFromCRV(self.exp)
+            [t, ez] = self.createArrayFromCRV(self.exp2)
+
+            # ex = [40+x for x in ex]
+            # ez = [150+z for z in ez]
+
+            # plt.plot(ex, ez)
+            # plt.show()
+
+            # x = list(x)
+            # z = list(z)
+            # maxIndex = x.index(max(x))
+
+            # x = x[:maxIndex]
+            # z = z[:maxIndex]
+
+        
+
+            maxPointX = max(x)
+            maxIndex = list(x).index(maxPointX)
+
+            # print(x[maxIndex:])
+            spl = np.polyfit(x[:maxIndex],z[:maxIndex], 2)
+
+            decreasingX = x[maxIndex+1:-1]
+            decreasingZ = z[maxIndex+1:-1]
+
+            spl2 = np.polyfit(decreasingX[::-1], decreasingZ[::-1], 2)
+    
+            x2 = np.arange(40, maxPointX, 1)
+            y2 = np.polyval(spl, x2)
+            y3 = np.polyval(spl2, x2)
+
+
+            # [ex,ey] = self.createArrayFromCRV(self.exp)
+            maxPointX = max(ex)
+            # maxPointY = max(ey)
+
+            maxPointIndex = list(ex).index(maxPointX)
+            ex = ex[:maxPointIndex]
+            ez = ez[:maxPointIndex]
+
+            spl = np.polyfit(ex, ez, 10)
+            ex2 = np.arange(40, maxPointX, 1)
+            ey2 = np.polyval(spl, ex2)
+
+            # print(ey2)
+
+            # plt.plot(ex2, ey2, label='ex')
+            # plt.plot(x2, y2, label='low cor')
+            # plt.plot(x2, y3, label='high cor')
+            # plt.legend()
+            # plt.show()
+
+            # inPointsX = []
+            # inPointsY = []
+            # outPointsX = []
+            # outPointsY = []
+
+            print(len(y2))
+            print(len(ey2))
+            print(len(y3))
+
+ 
+            for i in range(min(len(ey2), len(y2))):
+                if y2[i] <= ey2[i] <= y3[i]:
+                    inPoints += 1
+                    inPointsX.append(ex2[i])
+                    inPointsY.append(ey2[i])
+                else:
+                    outPoints += 1
+                    outPointsX.append(ex2[i])
+                    outPointsY.append(ey2[i])
+
+            print("# points inside: ", inPoints)
+            print("# points outside: ", outPoints)
+            print("fraction points inside: ", inPoints/len(ey2))
+            # making middle corridor
+
+            middle = []
+
+            for i in range(len(x2)):
+                middle.append((y2[i]+y3[i])/2)
+
+            minIndex = min(len(middle), len(ey2))
+            a = ey2[:minIndex]
+            b = middle[:minIndex]
+            
+            NCC = self.ncc(a, b)
+            print("ncc: ", NCC)
+
+            plt.plot(x2, y2, label = 'lower corridor')
+            plt.plot(x2, middle, label='middle corridor')
+            plt.plot(x2, y3, label = 'higher corridor')
+            # plt.plot(ex2, ey2, label = 'experiment')
+            # plt.plot(dspan, hc, label = 'higher corridor')
+            plt.scatter(inPointsX, inPointsY, label = 'inside points', color='black', marker='.', s=10)
+            plt.scatter(outPointsX, outPointsY, label = 'outside points', color='red', marker='.', s=10)
+
+
+            plt.legend()
+            plt.title(title)
+            plt.xlabel("X Displacement (mm)")
+            plt.ylabel("Y Displacement (mm)")
+            plt.show()
+
+            return
+            
             
         if testType == "rvel":
 
@@ -575,12 +744,22 @@ class NCC():
             print("# points inside: ", inPoints)
             print("# points outside: ", outPoints)
             print("fraction points inside: ", inPoints/len(ey2))
+            # making middle corridor
 
-            m = y3[:len(inPointsY)]
-            NCC = self.ncc(m, inPointsY)
+            middle = []
+
+            for i in range(len(x2)):
+                middle.append((y2[i]+y3[i])/2)
+
+            minIndex = min(len(middle), len(ey2))
+            a = ey2[:minIndex]
+            b = middle[:minIndex]
+            
+            NCC = self.ncc(a, b)
             print("ncc: ", NCC)
 
             plt.plot(x2, y2, label = 'higher corridor')
+            plt.plot(x2, middle, label='middle corridor')
             plt.plot(x2, y3, label = 'lower corridor')
             # plt.plot(ex2, ey2, label = 'experiment')
             # plt.plot(dspan, hc, label = 'higher corridor')
